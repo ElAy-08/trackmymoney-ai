@@ -8,7 +8,7 @@ function App() {
   const [status, setStatus] = useState<Status>('loading');
 
   useEffect(() => {
-    fetch(`${API_URL}/health`)
+    fetch(`${API_URL}health`)
       .then((res) => setStatus(res.ok ? 'ok' : 'error'))
       .catch(() => setStatus('error'));
   }, []);
