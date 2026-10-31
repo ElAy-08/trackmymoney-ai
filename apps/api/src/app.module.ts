@@ -9,6 +9,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { UsersModule } from './users/users.module.js';
 import { AccountModule } from './account/account.module.js';
+import { CategoryModule } from './category/category.module.js';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AccountModule } from './account/account.module.js';
     UsersModule,
     AuthModule,
     AccountModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [
