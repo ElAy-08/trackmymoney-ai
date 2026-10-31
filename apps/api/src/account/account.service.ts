@@ -17,7 +17,7 @@ export class AccountService {
     }
 
     // Returns 404 (not 403) for other users' accounts, so ids can't be probed.
-    async findOneOrFail(userId: string, id: string) {
+    async findById(userId: string, id: string) {
         const account = await this.prisma.account.findFirst({
             where: { id, userId },
         });
@@ -54,7 +54,7 @@ export class AccountService {
     }
 
     async setDefault(userId: string, id: string) {
-        await this.findOneOrFail(userId, id);
+        await this.findById(userId, id);
         await this.prisma.$transaction([
             this.prisma.account.updateMany({
                 where: { userId, isDefault: true },
@@ -65,11 +65,11 @@ export class AccountService {
                 data: { isDefault: true },
             }),
         ]);
-        return this.findOneOrFail(userId, id);
+        return this.findById(userId, id);
     }
 
     async remove(userId: string, id: string) {
-        const account = await this.findOneOrFail(userId, id);
+        const account = await this.findById(userId, id);
         if (account.isDefault) {
             throw new ConflictException(
                 'Set another account as default before deleting this one',
