@@ -14,6 +14,10 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
+  delete(id: string) {
+    return this.prisma.user.delete({ where: { id } });
+  }
+
   createWithDefaults(data: {
     name: string;
     email: string;

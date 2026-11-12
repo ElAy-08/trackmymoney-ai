@@ -1,7 +1,4 @@
-import {
-  ConflictException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
@@ -14,7 +11,9 @@ import { AuthService } from './auth.service.js';
 
 vi.mock('argon2', () => ({
   hash: vi.fn(async (value: string) => `hashed:${value}`),
-  verify: vi.fn(async (hash: string, value: string) => hash === `hashed:${value}`),
+  verify: vi.fn(
+    async (hash: string, value: string) => hash === `hashed:${value}`,
+  ),
 }));
 
 describe('AuthService', () => {
@@ -32,6 +31,7 @@ describe('AuthService', () => {
     findByEmail: ReturnType<typeof vi.fn>;
     createWithDefaults: ReturnType<typeof vi.fn>;
     findById: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
   };
   let prisma: {
     refreshToken: {
@@ -53,6 +53,7 @@ describe('AuthService', () => {
       findByEmail: vi.fn(),
       createWithDefaults: vi.fn(),
       findById: vi.fn(),
+      delete: vi.fn(),
     };
     prisma = {
       refreshToken: {
@@ -307,9 +308,20 @@ describe('AuthService', () => {
     it('rejects when the user no longer exists', async () => {
       users.findById.mockResolvedValue(null);
 
-      await expect(service.me(user.id)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.me(user.id)).rejects.toThrow(UnauthorizedException);
+    });
+
+    describe('deleteAccount', () => {
+      it('deletes only the authenticated user and propagates database errors', async () => {
+        users.delete.mockResolvedValue(user);
+
+        await expect(service.deleteAccount(user.id)).resolves.toBeUndefined();
+        expect(users.delete).toHaveBeenCalledWith(user.id);
+
+        const error = new Error('database unavailable');
+        users.delete.mockRejectedValue(error);
+        await expect(service.deleteAccount(user.id)).rejects.toBe(error);
+      });
     });
   });
 });

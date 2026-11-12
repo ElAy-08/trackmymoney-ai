@@ -11,7 +11,10 @@ describe('UsersService', () => {
   };
 
   let prisma: {
-    user: { findUnique: ReturnType<typeof vi.fn> };
+    user: {
+      findUnique: ReturnType<typeof vi.fn>;
+      delete: ReturnType<typeof vi.fn>;
+    };
     $transaction: ReturnType<typeof vi.fn>;
   };
   let service: UsersService;
@@ -19,7 +22,7 @@ describe('UsersService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     prisma = {
-      user: { findUnique: vi.fn() },
+      user: { findUnique: vi.fn(), delete: vi.fn() },
       $transaction: vi.fn(),
     };
     service = new UsersService(prisma as unknown as PrismaService);
@@ -39,6 +42,15 @@ describe('UsersService', () => {
 
     await expect(service.findById(user.id)).resolves.toBe(user);
     expect(prisma.user.findUnique).toHaveBeenCalledWith({
+      where: { id: user.id },
+    });
+  });
+
+  it('deletes a user by id and relies on database cascades', async () => {
+    prisma.user.delete.mockResolvedValue(user);
+
+    await expect(service.delete(user.id)).resolves.toBe(user);
+    expect(prisma.user.delete).toHaveBeenCalledWith({
       where: { id: user.id },
     });
   });

@@ -118,6 +118,10 @@ export class AuthService {
     return this.toPublicUser(user);
   }
 
+  async deleteAccount(userId: string) {
+    await this.users.delete(userId);
+  }
+
   private async issueTokens(user: Pick<User, 'id' | 'role'>) {
     const accessToken = await this.jwt.signAsync(
       { sub: user.id, role: user.role },

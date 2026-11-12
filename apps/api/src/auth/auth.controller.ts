@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Post } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import type { AuthUser } from './auth-user.js';
 import { AuthService } from './auth.service.js';
@@ -44,5 +44,11 @@ export class AuthController {
   @Get('me')
   me(@CurrentUser() user: AuthUser) {
     return this.auth.me(user.id);
+  }
+
+  @HttpCode(204)
+  @Delete('me')
+  async deleteAccount(@CurrentUser() user: AuthUser) {
+    await this.auth.deleteAccount(user.id);
   }
 }

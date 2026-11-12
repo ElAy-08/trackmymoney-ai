@@ -9,6 +9,7 @@ describe('AuthController', () => {
     refresh: vi.fn(),
     logout: vi.fn(),
     me: vi.fn(),
+    deleteAccount: vi.fn(),
   };
   const controller = new AuthController(auth as unknown as AuthService);
 
@@ -61,5 +62,12 @@ describe('AuthController', () => {
 
     expect(controller.me(user)).toBe(result);
     expect(auth.me).toHaveBeenCalledWith(user.id);
+  });
+
+  it('deletes the authenticated user account', async () => {
+    const user: AuthUser = { id: 'user-id', role: 'USER' };
+
+    await expect(controller.deleteAccount(user)).resolves.toBeUndefined();
+    expect(auth.deleteAccount).toHaveBeenCalledWith(user.id);
   });
 });
