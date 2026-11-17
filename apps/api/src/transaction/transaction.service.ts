@@ -12,6 +12,11 @@ import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { ListTransactionsQueryDto } from './dto/list-transactions-query.dto.js';
 import type { Prisma } from '../generated/prisma/client.js';
 
+const TRANSACTION_INCLUDE = {
+    category: { select: { id: true, name: true, color: true, icon: true } },
+    account: { select: { id: true, name: true } },
+} as const;
+
 @Injectable()
 export class TransactionService {
     constructor(
@@ -44,6 +49,7 @@ export class TransactionService {
                 date: new Date(`${dto.date}T00:00:00.000Z`),
                 source,
             },
+            include: TRANSACTION_INCLUDE,
         });
     }
 
@@ -83,10 +89,7 @@ export class TransactionService {
                 orderBy: [{ date: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
                 skip: (page - 1) * pageSize,
                 take: pageSize,
-                include: {
-                    category: { select: { id: true, name: true, color: true, icon: true } },
-                    account: { select: { id: true, name: true } },
-                },
+                include: TRANSACTION_INCLUDE,
             }),
             this.prisma.transaction.count({ where }),
         ]);
@@ -107,10 +110,7 @@ export class TransactionService {
   async findOneOrFail(userId: string, id: string) {
     const transaction = await this.prisma.transaction.findFirst({
       where: { id, userId },
-      include: {
-        category: { select: { id: true, name: true, color: true, icon: true } },
-        account: { select: { id: true, name: true } },
-      },
+      include: TRANSACTION_INCLUDE,
     });
     if (!transaction) {
       throw new NotFoundException('Transaction not found');
@@ -146,10 +146,7 @@ export class TransactionService {
           merchant: dto.merchant,
           date: dto.date ? this.toDate(dto.date) : undefined,
         },
-        include: {
-          category: { select: { id: true, name: true, color: true, icon: true } },
-          account: { select: { id: true, name: true } },
-        },
+        include: TRANSACTION_INCLUDE,
       });
     } catch (error) {
       if ((error as { code?: string }).code === 'P2025') {

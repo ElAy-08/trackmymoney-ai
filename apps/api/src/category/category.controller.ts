@@ -14,25 +14,32 @@ import {
     ApiBadRequestResponse,
     ApiBearerAuth,
     ApiConflictResponse,
+    ApiCreatedResponse,
+    ApiNoContentResponse,
     ApiNotFoundResponse,
+    ApiOkResponse,
     ApiOperation,
     ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { AuthUser } from '../auth/auth-user.js';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import { CategoryService } from './category.service.js';
 import { CreateCategoryDto } from './dto/create-category.dto.js';
+import { CategoryResponseDto } from './dto/category-response.dto.js';
 import { ListCategoriesQueryDto } from './dto/list-categories-query.dto.js';
 import { UpdateCategoryDto } from './dto/update-category.dto.js';
 
 @Controller('categories')
 @ApiTags('categories')
 @ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Missing, invalid or expired access token.' })
 export class CategoryController {
     constructor(private readonly categories: CategoryService) { }
 
     @Get()
     @ApiOperation({ summary: 'List categories' })
+    @ApiOkResponse({ type: [CategoryResponseDto] })
     @ApiBadRequestResponse({ description: 'The query parameters are invalid.' })
     list(
         @CurrentUser() user: AuthUser,
@@ -43,6 +50,7 @@ export class CategoryController {
 
     @Post()
     @ApiOperation({ summary: 'Create a category' })
+    @ApiCreatedResponse({ type: CategoryResponseDto })
     @ApiBadRequestResponse({ description: 'The category details are invalid.' })
     @ApiConflictResponse({ description: 'A category with that name already exists.' })
     create(@CurrentUser() user: AuthUser, @Body() dto: CreateCategoryDto) {
@@ -51,6 +59,7 @@ export class CategoryController {
 
     @Patch(':id')
     @ApiOperation({ summary: 'Update a category' })
+    @ApiOkResponse({ type: CategoryResponseDto })
     @ApiBadRequestResponse({ description: 'The category ID or details are invalid.' })
     @ApiNotFoundResponse({ description: 'The category was not found.' })
     @ApiConflictResponse({ description: 'A category with that name already exists.' })
@@ -65,6 +74,7 @@ export class CategoryController {
     @HttpCode(200)
     @Post(':id/archive')
     @ApiOperation({ summary: 'Archive a category' })
+    @ApiOkResponse({ type: CategoryResponseDto })
     @ApiBadRequestResponse({ description: 'The category ID is invalid.' })
     @ApiNotFoundResponse({ description: 'The category was not found.' })
     archive(
@@ -77,6 +87,7 @@ export class CategoryController {
     @HttpCode(200)
     @Post(':id/unarchive')
     @ApiOperation({ summary: 'Restore an archived category' })
+    @ApiOkResponse({ type: CategoryResponseDto })
     @ApiBadRequestResponse({ description: 'The category ID is invalid.' })
     @ApiNotFoundResponse({ description: 'The category was not found.' })
     unarchive(
@@ -89,6 +100,7 @@ export class CategoryController {
     @HttpCode(204)
     @Delete(':id')
     @ApiOperation({ summary: 'Delete a category' })
+    @ApiNoContentResponse()
     @ApiBadRequestResponse({ description: 'The category ID is invalid.' })
     @ApiNotFoundResponse({ description: 'The category was not found.' })
     @ApiConflictResponse({ description: 'A category with transactions cannot be deleted.' })

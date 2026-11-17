@@ -3,24 +3,33 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { AuthUser } from '../auth/auth-user.js';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import { DashboardService } from './dashboard.service.js';
 import { ByCategoryQueryDto } from './dto/by-category-query.dto.js';
+import {
+  ByCategoryResponseDto,
+  MonthlyResponseDto,
+  SummaryResponseDto,
+} from './dto/dashboard-response.dto.js';
 import { MonthlyQueryDto } from './dto/monthly-query.dto.js';
 import { StatsPeriodQueryDto } from './dto/stats-period-query.dto.js';
 
 @Controller('dashboard')
 @ApiTags('dashboard')
 @ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Missing, invalid or expired access token.' })
 export class DashboardController {
   constructor(private readonly dashboard: DashboardService) {}
 
   @Get('summary')
   @ApiOperation({ summary: 'Get dashboard summary' })
+  @ApiOkResponse({ type: SummaryResponseDto })
   @ApiBadRequestResponse({ description: 'The query parameters or date range are invalid.' })
   @ApiNotFoundResponse({ description: 'The account was not found.' })
   summary(
@@ -32,6 +41,7 @@ export class DashboardController {
 
   @Get('by-category')
   @ApiOperation({ summary: 'Get transaction totals by category' })
+  @ApiOkResponse({ type: ByCategoryResponseDto })
   @ApiBadRequestResponse({ description: 'The query parameters or date range are invalid.' })
   @ApiNotFoundResponse({ description: 'The account was not found.' })
   byCategory(
@@ -43,6 +53,7 @@ export class DashboardController {
 
   @Get('monthly')
   @ApiOperation({ summary: 'Get monthly income and expense totals' })
+  @ApiOkResponse({ type: MonthlyResponseDto })
   @ApiBadRequestResponse({ description: 'The query parameters are invalid.' })
   @ApiNotFoundResponse({ description: 'The account was not found.' })
   monthly(@CurrentUser() user: AuthUser, @Query() query: MonthlyQueryDto) {
