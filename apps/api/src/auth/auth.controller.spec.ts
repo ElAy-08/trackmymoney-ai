@@ -66,8 +66,9 @@ describe('AuthController', () => {
 
   it('deletes the authenticated user account', async () => {
     const user: AuthUser = { id: 'user-id', role: 'USER' };
+    const dto = { password: 'secure-password' };
 
-    await expect(controller.deleteAccount(user)).resolves.toBeUndefined();
-    expect(auth.deleteAccount).toHaveBeenCalledWith(user.id);
+    await expect(controller.deleteAccount(user, dto)).resolves.toBeUndefined();
+    expect(auth.deleteAccount).toHaveBeenCalledWith(user.id, dto.password);
   });
 });

@@ -1,4 +1,9 @@
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
@@ -312,15 +317,56 @@ describe('AuthService', () => {
     });
 
     describe('deleteAccount', () => {
-      it('deletes only the authenticated user and propagates database errors', async () => {
+      it('verifies the password before deleting the authenticated user', async () => {
+        users.findById.mockResolvedValue(user);
         users.delete.mockResolvedValue(user);
 
-        await expect(service.deleteAccount(user.id)).resolves.toBeUndefined();
+        await expect(
+          service.deleteAccount(user.id, 'secure-password'),
+        ).resolves.toBeUndefined();
+        expect(users.findById).toHaveBeenCalledWith(user.id);
+        expect(argon2.verify).toHaveBeenCalledWith(
+          user.passwordHash,
+          'secure-password',
+        );
         expect(users.delete).toHaveBeenCalledWith(user.id);
+      });
 
+      it('rejects a wrong password without deleting the user', async () => {
+        users.findById.mockResolvedValue(user);
+
+        await expect(
+          service.deleteAccount(user.id, 'wrong-password'),
+        ).rejects.toThrow(ForbiddenException);
+        expect(users.delete).not.toHaveBeenCalled();
+      });
+
+      it('returns not found when the user no longer exists', async () => {
+        users.findById.mockResolvedValue(null);
+
+        await expect(
+          service.deleteAccount(user.id, 'secure-password'),
+        ).rejects.toThrow(NotFoundException);
+        expect(argon2.verify).not.toHaveBeenCalled();
+        expect(users.delete).not.toHaveBeenCalled();
+      });
+
+      it('maps a user deleted concurrently to not found', async () => {
+        users.findById.mockResolvedValue(user);
+        users.delete.mockRejectedValue({ code: 'P2025' });
+
+        await expect(
+          service.deleteAccount(user.id, 'secure-password'),
+        ).rejects.toThrow(NotFoundException);
+      });
+
+      it('propagates unexpected database errors', async () => {
+        users.findById.mockResolvedValue(user);
         const error = new Error('database unavailable');
         users.delete.mockRejectedValue(error);
-        await expect(service.deleteAccount(user.id)).rejects.toBe(error);
+        await expect(
+          service.deleteAccount(user.id, 'secure-password'),
+        ).rejects.toBe(error);
       });
     });
   });
