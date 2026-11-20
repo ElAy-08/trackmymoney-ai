@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router';
+import { ProtectedLayout, PublicAuthLayout } from '@/app/session-guards';
 import { RootLayout } from '@/layouts/root-layout';
 import { AccountsPage } from '@/pages/accounts-page';
 import { CategoriesPage } from '@/pages/categories-page';
@@ -10,16 +11,26 @@ import { TransactionsPage } from '@/pages/transactions-page';
 
 export const router = createBrowserRouter([
   {
-    path: '/',
-    Component: RootLayout,
+    Component: ProtectedLayout,
     children: [
-      { index: true, Component: DashboardPage },
-      { path: 'transactions', Component: TransactionsPage },
-      { path: 'categories', Component: CategoriesPage },
-      { path: 'accounts', Component: AccountsPage },
+      {
+        path: '/',
+        Component: RootLayout,
+        children: [
+          { index: true, Component: DashboardPage },
+          { path: 'transactions', Component: TransactionsPage },
+          { path: 'categories', Component: CategoriesPage },
+          { path: 'accounts', Component: AccountsPage },
+        ],
+      },
     ],
   },
-  { path: '/login', Component: LoginPage },
-  { path: '/register', Component: RegisterPage },
+  {
+    Component: PublicAuthLayout,
+    children: [
+      { path: '/login', Component: LoginPage },
+      { path: '/register', Component: RegisterPage },
+    ],
+  },
   { path: '*', Component: NotFoundPage },
 ]);
