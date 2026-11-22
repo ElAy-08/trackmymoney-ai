@@ -36,3 +36,16 @@ export function formatMonth(key: string): string {
 
   return new Intl.DateTimeFormat(DATE_LOCALE, options).format(date);
 }
+
+export function formatCompactMoney(
+  cents: number,
+  currency: string,
+  locale?: string,
+): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(cents / 100);
+} 

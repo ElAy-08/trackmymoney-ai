@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { formatDay, formatMoney, formatMonth } from '@/lib/format';
+import {
+  formatCompactMoney,
+  formatDay,
+  formatMoney,
+  formatMonth,
+} from '@/lib/format';
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -8,6 +13,24 @@ afterEach(() => {
 describe('formatMoney', () => {
   it('formats negative cents as a negative currency amount', () => {
     expect(formatMoney(-12345, 'EUR', 'en-US')).toBe('-€123.45');
+  });
+});
+
+describe('formatCompactMoney', () => {
+  it('formats 150000 EUR compactly for en-IE', () => {
+    expect(formatCompactMoney(150000, 'EUR', 'en-IE')).toContain('1.5');
+  });
+
+  it('formats zero cents as a zero amount', () => {
+    expect(formatCompactMoney(0, 'EUR', 'en-IE')).toContain('0');
+  });
+
+  it('rounds a very small amount sensibly', () => {
+    expect(formatCompactMoney(99, 'EUR', 'en-US')).toBe('€1');
+  });
+
+  it('never throws for negative amounts', () => {
+    expect(() => formatCompactMoney(-12345, 'EUR', 'en-US')).not.toThrow();
   });
 });
 
