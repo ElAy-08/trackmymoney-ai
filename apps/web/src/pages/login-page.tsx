@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -17,31 +17,7 @@ import {
 import { setSessionTokens } from '@/lib/auth/session-store';
 import { api } from '@/lib/api/client';
 
-function getReturnLocation(state: unknown) {
-  if (typeof state !== 'object' || state === null || !('from' in state)) {
-    return '/';
-  }
-
-  const from = state.from;
-  if (
-    typeof from !== 'object' ||
-    from === null ||
-    !('pathname' in from) ||
-    typeof from.pathname !== 'string' ||
-    !from.pathname.startsWith('/') ||
-    from.pathname.startsWith('//')
-  ) {
-    return '/';
-  }
-
-  const search = 'search' in from && typeof from.search === 'string' ? from.search : '';
-  const hash = 'hash' in from && typeof from.hash === 'string' ? from.hash : '';
-  return { pathname: from.pathname, search, hash };
-}
-
 export function LoginPage() {
-  const location = useLocation();
-  const navigate = useNavigate();
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
@@ -56,7 +32,6 @@ export function LoginPage() {
 
       if (response.ok && data) {
         setSessionTokens(data.accessToken, data.refreshToken);
-        navigate(getReturnLocation(location.state), { replace: true });
         return;
       }
 

@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { ColdStartIndicator } from '@/app/cold-start-indicator';
+import '@/lib/auth/session-cache';
 import { restoreSession } from '@/lib/api/client';
 import { queryClient } from '@/lib/query-client';
 import { getRefreshToken, setSessionStatus } from '@/lib/auth/session-store';

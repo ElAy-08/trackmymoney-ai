@@ -1,5 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useSession } from '@/lib/auth/use-session';
+import { getSafeRedirect } from '@/lib/auth/redirect';
+export { getSafeRedirect } from '@/lib/auth/redirect';
 
 export function SessionLoadingPage() {
   return (
@@ -30,13 +32,14 @@ export function ProtectedLayout() {
 
 export function PublicAuthLayout() {
   const { status } = useSession();
+  const location = useLocation();
 
   if (status === 'loading') {
     return <SessionLoadingPage />;
   }
 
   if (status === 'authenticated') {
-    return <Navigate to="/" replace />;
+    return <Navigate to={getSafeRedirect(location.state)} replace />;
   }
 
   return <Outlet />;

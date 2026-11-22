@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,7 +18,6 @@ import { setSessionTokens } from '@/lib/auth/session-store';
 import { api } from '@/lib/api/client';
 
 export function RegisterPage() {
-  const navigate = useNavigate();
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { name: '', email: '', password: '' },
@@ -33,7 +32,6 @@ export function RegisterPage() {
 
       if (response.ok && data) {
         setSessionTokens(data.accessToken, data.refreshToken);
-        navigate('/', { replace: true });
         return;
       }
 
