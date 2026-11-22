@@ -1,6 +1,8 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -118,8 +120,25 @@ export class AuthService {
     return this.toPublicUser(user);
   }
 
-  async deleteAccount(userId: string) {
-    await this.users.delete(userId);
+  async deleteAccount(userId: string, password: string) {
+    const user = await this.users.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const passwordMatches = await argon2.verify(user.passwordHash, password);
+    if (!passwordMatches) {
+      throw new ForbiddenException('Password confirmation is incorrect');
+    }
+
+    try {
+      await this.users.delete(userId);
+    } catch (error) {
+      if ((error as { code?: string }).code === 'P2025') {
+        throw new NotFoundException('User not found');
+      }
+      throw error;
+    }
   }
 
   private async issueTokens(user: Pick<User, 'id' | 'role'>) {

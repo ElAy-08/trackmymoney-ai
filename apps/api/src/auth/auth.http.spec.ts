@@ -80,9 +80,20 @@ describe('Auth HTTP API', () => {
     await request(app.getHttpServer())
       .delete('/auth/me')
       .set('Authorization', `Bearer ${token}`)
+      .expect(400);
+
+    expect(auth.deleteAccount).not.toHaveBeenCalled();
+
+    await request(app.getHttpServer())
+      .delete('/auth/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ password: 'secure-password' })
       .expect(204);
 
     expect(auth.deleteAccount).toHaveBeenCalledOnce();
-    expect(auth.deleteAccount).toHaveBeenCalledWith('user-id');
+    expect(auth.deleteAccount).toHaveBeenCalledWith(
+      'user-id',
+      'secure-password',
+    );
   });
 });

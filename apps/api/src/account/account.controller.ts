@@ -13,30 +13,38 @@ import {
     ApiBadRequestResponse,
     ApiBearerAuth,
     ApiConflictResponse,
+    ApiCreatedResponse,
+    ApiNoContentResponse,
     ApiNotFoundResponse,
+    ApiOkResponse,
     ApiOperation,
     ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import type { AuthUser } from '../auth/auth-user.js';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import { AccountService } from './account.service.js';
 import { CreateAccountDto } from './dto/create-account.dto.js';
+import { AccountResponseDto } from './dto/account-response.dto.js';
 import { UpdateAccountDto } from './dto/update-account.dto.js';
 
 @Controller('accounts')
 @ApiTags('accounts')
 @ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Missing, invalid or expired access token.' })
 export class AccountController {
     constructor(private readonly accounts: AccountService) { }
 
     @Get()
     @ApiOperation({ summary: 'List accounts' })
+    @ApiOkResponse({ type: [AccountResponseDto] })
     list(@CurrentUser() user: AuthUser) {
         return this.accounts.findByUserId(user.id);
     }
 
     @Post()
     @ApiOperation({ summary: 'Create an account' })
+    @ApiCreatedResponse({ type: AccountResponseDto })
     @ApiBadRequestResponse({ description: 'The account details are invalid.' })
     @ApiConflictResponse({ description: 'An account with that name already exists.' })
     create(@CurrentUser() user: AuthUser, @Body() dto: CreateAccountDto) {
@@ -45,6 +53,7 @@ export class AccountController {
 
     @Patch(':id')
     @ApiOperation({ summary: 'Update an account' })
+    @ApiOkResponse({ type: AccountResponseDto })
     @ApiBadRequestResponse({ description: 'The account ID or details are invalid.' })
     @ApiNotFoundResponse({ description: 'The account was not found.' })
     @ApiConflictResponse({ description: 'An account with that name already exists.' })
@@ -59,6 +68,7 @@ export class AccountController {
     @HttpCode(200)
     @Post(':id/default')
     @ApiOperation({ summary: 'Set the default account' })
+    @ApiOkResponse({ type: AccountResponseDto })
     @ApiBadRequestResponse({ description: 'The account ID is invalid.' })
     @ApiNotFoundResponse({ description: 'The account was not found.' })
     setDefault(
@@ -71,6 +81,7 @@ export class AccountController {
     @HttpCode(204)
     @Delete(':id')
     @ApiOperation({ summary: 'Delete an account' })
+    @ApiNoContentResponse()
     @ApiBadRequestResponse({ description: 'The account ID is invalid.' })
     @ApiNotFoundResponse({ description: 'The account was not found.' })
     @ApiConflictResponse({ description: 'The default account or an account with transactions cannot be deleted.' })

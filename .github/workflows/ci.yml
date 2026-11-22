@@ -28,3 +28,5 @@ jobs:
       - run: pnpm --filter api test
       - run: pnpm --filter api build
       - run: pnpm --filter web build
+      - run: pnpm --filter web test
+      - run: pnpm --filter web lint

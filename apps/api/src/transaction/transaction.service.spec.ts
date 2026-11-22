@@ -90,6 +90,10 @@ describe('TransactionService', () => {
           date: new Date('2026-01-15T00:00:00.000Z'),
           source: TransactionSource.MANUAL,
         },
+        include: {
+          category: { select: { id: true, name: true, color: true, icon: true } },
+          account: { select: { id: true, name: true } },
+        },
       });
     });
 
