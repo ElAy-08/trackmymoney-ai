@@ -5,6 +5,7 @@ import { formatDay } from '@/lib/format';
 import { lazy, Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCurrency } from '@/features/dashboard/hooks';
+import { RecentTransactions } from '@/features/dashboard/recent-transactions';
 
 const MonthlyChart = lazy(() =>
   import('@/features/dashboard/monthly-chart').then((module) => ({
@@ -45,6 +46,7 @@ export function DashboardPage() {
           <MonthlyChart currency={currency} />
         </Suspense>
       </div>
+      <RecentTransactions currency={currency} />
     </div>
   );
 }

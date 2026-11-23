@@ -57,3 +57,14 @@ export function formatPercent(percentage: number, locale?: string): string {
     maximumFractionDigits: 1,
   }).format(percentage / 100);
 }
+
+export function formatSignedMoney(
+  type: 'INCOME' | 'EXPENSE',
+  cents: number,
+  currency: string,
+  locale?: string,
+): string {
+  return type === 'INCOME'
+    ? `+${formatMoney(cents, currency, locale)}`
+    : formatMoney(-cents, currency, locale);
+}

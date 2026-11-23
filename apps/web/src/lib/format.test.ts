@@ -5,6 +5,7 @@ import {
   formatMoney,
   formatMonth,
   formatPercent,
+  formatSignedMoney,
 } from '@/lib/format';
 
 afterEach(() => {
@@ -83,5 +84,19 @@ describe('formatPercent', () => {
     expect(formatPercent(36.5, 'en-US')).toBe('36.5%');
     expect(formatPercent(0, 'en-US')).toBe('0.0%');
     expect(formatPercent(100, 'en-US')).toBe('100.0%');
+  });
+});
+
+describe('formatSignedMoney', () => {
+  it('formats income with a plus sign and thousands separator', () => {
+    const formatted = formatSignedMoney('INCOME', 120000, 'EUR', 'en-IE');
+    expect(formatted.startsWith('+')).toBe(true);
+    expect(formatted).toContain('1,200');
+  });
+
+  it('formats expense with a minus sign and decimal amount', () => {
+    const formatted = formatSignedMoney('EXPENSE', 1250, 'EUR', 'en-IE');
+    expect(formatted.startsWith('-') || formatted.startsWith('\u2212')).toBe(true);
+    expect(formatted).toContain('12.50');
   });
 });
