@@ -78,6 +78,7 @@ export function LoginPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-10">
+      <title>Sign in · TrackMyMoney AI</title>
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Welcome back</CardTitle>

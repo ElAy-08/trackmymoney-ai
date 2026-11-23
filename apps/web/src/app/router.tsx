@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router';
+import { RouteErrorPage } from '@/app/route-error-page';
 import { ProtectedLayout, PublicAuthLayout } from '@/app/session-guards';
 import { RootLayout } from '@/layouts/root-layout';
 import { AccountsPage } from '@/pages/accounts-page';
@@ -12,10 +13,12 @@ import { TransactionsPage } from '@/pages/transactions-page';
 export const router = createBrowserRouter([
   {
     Component: ProtectedLayout,
+    ErrorBoundary: RouteErrorPage,
     children: [
       {
         path: '/',
         Component: RootLayout,
+        ErrorBoundary: RouteErrorPage,
         children: [
           { index: true, Component: DashboardPage },
           { path: 'transactions', Component: TransactionsPage },
