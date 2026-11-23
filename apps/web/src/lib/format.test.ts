@@ -4,6 +4,7 @@ import {
   formatDay,
   formatMoney,
   formatMonth,
+  formatPercent,
 } from '@/lib/format';
 
 afterEach(() => {
@@ -74,5 +75,13 @@ describe('formatMonth', () => {
     }).format(new Date(Date.UTC(differentYear, 9, 1)));
 
     expect(formatMonth(`${differentYear}-10`)).toBe(expected);
+  });
+});
+
+describe('formatPercent', () => {
+  it('formats percentages with one decimal place', () => {
+    expect(formatPercent(36.5, 'en-US')).toBe('36.5%');
+    expect(formatPercent(0, 'en-US')).toBe('0.0%');
+    expect(formatPercent(100, 'en-US')).toBe('100.0%');
   });
 });

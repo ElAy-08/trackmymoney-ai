@@ -12,6 +12,12 @@ const MonthlyChart = lazy(() =>
   })),
 );
 
+const CategoryChart = lazy(() =>
+  import('@/features/dashboard/category-chart').then((module) => ({
+    default: module.CategoryChart,
+  })),
+);
+
 export function DashboardPage() {
   const { preset, period, setPreset } = usePeriod();
   const currency = useCurrency(period);
@@ -28,10 +34,17 @@ export function DashboardPage() {
         <PeriodSelect value={preset} onChange={setPreset} />
       </div>
       <SummaryCards period={period} />
-      <SummaryCards period={period} />
       <Suspense fallback={<Skeleton className="h-96 rounded-xl" />}>
         <MonthlyChart currency={currency} />
       </Suspense>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Suspense fallback={<Skeleton className="h-96 rounded-xl" />}>
+          <CategoryChart period={period} currency={currency} />
+        </Suspense>
+        <Suspense fallback={<Skeleton className="h-96 rounded-xl" />}>
+          <MonthlyChart currency={currency} />
+        </Suspense>
+      </div>
     </div>
   );
 }
