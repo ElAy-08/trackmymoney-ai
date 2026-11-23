@@ -78,6 +78,7 @@ export function RegisterPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-10">
+      <title>Create account · TrackMyMoney AI</title>
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Create your account</CardTitle>

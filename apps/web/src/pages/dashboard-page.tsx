@@ -4,8 +4,12 @@ import { usePeriod } from '@/features/dashboard/use-period';
 import { formatDay } from '@/lib/format';
 import { lazy, Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCurrency } from '@/features/dashboard/hooks';
+import {
+  useCurrency,
+  useRecentTransactions,
+} from '@/features/dashboard/hooks';
 import { RecentTransactions } from '@/features/dashboard/recent-transactions';
+import { EmptyDashboard } from '@/features/dashboard/empty-dashboard';
 
 const MonthlyChart = lazy(() =>
   import('@/features/dashboard/monthly-chart').then((module) => ({
@@ -22,9 +26,11 @@ const CategoryChart = lazy(() =>
 export function DashboardPage() {
   const { preset, period, setPreset } = usePeriod();
   const currency = useCurrency(period);
+  const recent = useRecentTransactions(5);
 
   return (
     <div className="space-y-6">
+      <title>Dashboard · TrackMyMoney AI</title>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Dashboard</h1>
@@ -34,19 +40,25 @@ export function DashboardPage() {
         </div>
         <PeriodSelect value={preset} onChange={setPreset} />
       </div>
-      <SummaryCards period={period} />
-      <Suspense fallback={<Skeleton className="h-96 rounded-xl" />}>
-        <MonthlyChart currency={currency} />
-      </Suspense>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Suspense fallback={<Skeleton className="h-96 rounded-xl" />}>
-          <CategoryChart period={period} currency={currency} />
-        </Suspense>
-        <Suspense fallback={<Skeleton className="h-96 rounded-xl" />}>
-          <MonthlyChart currency={currency} />
-        </Suspense>
-      </div>
-      <RecentTransactions currency={currency} />
+      {!recent.isPending && !recent.isError && recent.data.total === 0 ? (
+        <EmptyDashboard />
+      ) : (
+        <>
+          <SummaryCards period={period} />
+          <Suspense fallback={<Skeleton className="h-96 rounded-xl" />}>
+            <MonthlyChart currency={currency} />
+          </Suspense>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Suspense fallback={<Skeleton className="h-96 rounded-xl" />}>
+              <CategoryChart period={period} currency={currency} />
+            </Suspense>
+            <Suspense fallback={<Skeleton className="h-96 rounded-xl" />}>
+              <MonthlyChart currency={currency} />
+            </Suspense>
+          </div>
+          <RecentTransactions currency={currency} />
+        </>
+      )}
     </div>
   );
 }

@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCompactMoney, formatMoney, formatMonth } from '@/lib/format';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { useMonthlyTotals } from './hooks';
 
 // The keys must match the dataKey of each <Bar>.
@@ -27,11 +28,14 @@ const chartConfig = {
 
 export function MonthlyChart({ currency }: { currency: string }) {
   const monthly = useMonthlyTotals(6);
+  const reducedMotion = useReducedMotion();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Income vs. expenses</CardTitle>
+        <CardTitle role="heading" aria-level={2}>
+          Income vs. expenses
+        </CardTitle>
         <CardDescription>Last 6 months</CardDescription>
       </CardHeader>
       <CardContent>
@@ -99,8 +103,18 @@ export function MonthlyChart({ currency }: { currency: string }) {
                   }
                 />
                 <ChartLegend content={<ChartLegendContent />} />
-                <Bar dataKey="incomeCents" fill="var(--color-incomeCents)" radius={4} />
-                <Bar dataKey="expenseCents" fill="var(--color-expenseCents)" radius={4} />
+                <Bar
+                  dataKey="incomeCents"
+                  fill="var(--color-incomeCents)"
+                  radius={4}
+                  isAnimationActive={!reducedMotion}
+                />
+                <Bar
+                  dataKey="expenseCents"
+                  fill="var(--color-expenseCents)"
+                  radius={4}
+                  isAnimationActive={!reducedMotion}
+                />
               </BarChart>
             </ChartContainer>
 

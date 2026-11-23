@@ -19,7 +19,9 @@ export function RecentTransactions({ currency }: { currency: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent transactions</CardTitle>
+        <CardTitle role="heading" aria-level={2}>
+          Recent transactions
+        </CardTitle>
         <CardDescription>The latest {RECENT_LIMIT}, in any period</CardDescription>
       </CardHeader>
       <CardContent>

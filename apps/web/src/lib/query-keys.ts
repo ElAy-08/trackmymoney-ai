@@ -1,3 +1,5 @@
+import type { TransactionFilters } from '@/features/transactions/filters';
+
 export type Period = { from: string; to: string };
 
 export const queryKeys = {
@@ -10,6 +12,14 @@ export const queryKeys = {
   },
   transactions: {
     all: ['transactions'] as const,
+    list: (filters: TransactionFilters) =>
+      ['transactions', 'list', filters] as const,
     recent: (limit: number) => ['transactions', 'recent', limit] as const,
+  },
+  categories: {
+    all: ['categories'] as const,
+  },
+  accounts: {
+    all: ['accounts'] as const,
   },
 };

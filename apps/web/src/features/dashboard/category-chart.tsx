@@ -16,6 +16,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatMoney, formatPercent } from '@/lib/format';
 import type { Period } from '@/lib/query-keys';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { groupCategories } from './category-groups';
 import { useCategoryBreakdown } from './hooks';
 
@@ -30,12 +31,13 @@ export function CategoryChart({
   currency: string;
 }) {
   const breakdown = useCategoryBreakdown(period);
+  const reducedMotion = useReducedMotion();
 
   if (breakdown.isPending) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Expenses by category</CardTitle>
+          <CardTitle role="heading" aria-level={2}>Expenses by category</CardTitle>
         </CardHeader>
         <CardContent>
           <Skeleton className="h-72 w-full rounded-lg" aria-busy="true" />
@@ -48,7 +50,7 @@ export function CategoryChart({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Expenses by category</CardTitle>
+          <CardTitle role="heading" aria-level={2}>Expenses by category</CardTitle>
         </CardHeader>
         <CardContent className="flex h-72 flex-col items-center justify-center gap-3">
           <p className="text-sm text-muted-foreground">
@@ -68,7 +70,7 @@ export function CategoryChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Expenses by category</CardTitle>
+        <CardTitle role="heading" aria-level={2}>Expenses by category</CardTitle>
         <CardDescription>
           {slices.length === 0
             ? 'No expenses in this period'
@@ -130,6 +132,7 @@ export function CategoryChart({
                   innerRadius={60}
                   outerRadius={100}
                   strokeWidth={2}
+                  isAnimationActive={!reducedMotion}
                 />
               </PieChart>
             </ChartContainer>

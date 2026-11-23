@@ -61,6 +61,12 @@ export function RootLayout() {
 
   return (
     <div className="min-h-screen">
+      <a
+        className="sr-only rounded-md bg-background px-3 py-2 text-sm font-medium text-foreground shadow focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus-visible:ring-2 focus-visible:ring-ring"
+        href="#main-content"
+      >
+        Skip to main content
+      </a>
       <header className="border-b">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4">
           <span className="font-semibold">TrackMyMoney AI</span>
@@ -116,7 +122,7 @@ export function RootLayout() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl p-4">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-5xl p-4">
         <Outlet />
       </main>
     </div>

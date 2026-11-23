@@ -37,6 +37,20 @@ describe('RootLayout', () => {
     logoutMock.mockResolvedValue(undefined);
   });
 
+  it('places the skip link first and targets the main content', () => {
+    const { container } = renderLayout();
+    const firstFocusable = container.querySelector(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+
+    expect(firstFocusable).toHaveTextContent('Skip to main content');
+    expect(firstFocusable).toHaveAttribute('href', '#main-content');
+    expect(container.querySelector('#main-content')).toHaveAttribute(
+      'tabindex',
+      '-1',
+    );
+  });
+
   it('opens a dialog with all navigation links and Sign out', async () => {
     renderLayout();
 

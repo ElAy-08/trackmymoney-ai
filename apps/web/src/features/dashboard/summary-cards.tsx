@@ -24,7 +24,13 @@ function StatCard({
     <Card>
       <CardHeader className="pb-2">
         <CardDescription>{title}</CardDescription>
-        <CardTitle className="text-2xl tabular-nums">{value}</CardTitle>
+        <CardTitle
+          className="text-2xl tabular-nums"
+          role="heading"
+          aria-level={2}
+        >
+          {value}
+        </CardTitle>
       </CardHeader>
       {hint ? (
         <CardContent className="text-xs text-muted-foreground">{hint}</CardContent>
