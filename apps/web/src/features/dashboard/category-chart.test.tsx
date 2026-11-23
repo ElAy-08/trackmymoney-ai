@@ -99,7 +99,7 @@ describe('CategoryChart', () => {
 
     const total = screen.getByText(/Total:/).textContent ?? '';
     expect(normalize(total)).toBe(
-      normalize(`Total: ${formatMoney(40000, 'EUR', 'de-DE')}`),
+      normalize(`Total: ${formatMoney(40000, 'EUR')}`),
     );
 
     const list = screen.getByRole('list');
@@ -115,10 +115,10 @@ describe('CategoryChart', () => {
       const text = rows[index].textContent ?? '';
       expect(text).toContain(category.name);
       expect(normalize(text)).toContain(
-        normalize(formatMoney(category.cents, 'EUR', 'de-DE')),
+        normalize(formatMoney(category.cents, 'EUR')),
       );
       expect(normalize(text)).toContain(
-        normalize(formatPercent(category.percentage, 'de-DE')),
+        normalize(formatPercent(category.percentage)),
       );
       expect(text).toContain(`${category.count}×`);
     });
