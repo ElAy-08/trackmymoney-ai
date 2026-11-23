@@ -58,7 +58,7 @@ export function useRecentTransactions(limit = 5) {
   });
 }
 
-export function useCurrency(period: Period) { 
+export function useCurrency(period: Period) {
   const summary = useSummary(period);
   return summary.data?.balances[0]?.currency ?? 'EUR';
 }
